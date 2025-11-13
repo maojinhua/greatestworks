@@ -2,3 +2,4 @@
 [submodule "network/protocol"]
 	path = network/protocol
 	url = https://github.com/phuhao00/greatestworks-proto.git
+	active = false
