@@ -102,6 +102,7 @@ func (s *Server) Start() error {
 		})
 
 		if err := s.server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+			fmt.Println("Failed to create listener2 ", err, " s.config.Addr ", s.server.Addr)
 			s.logger.Error("HTTP server failed", err, logging.Fields{
 				"addr": s.server.Addr,
 			})

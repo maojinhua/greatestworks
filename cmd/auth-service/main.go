@@ -4,6 +4,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"greatestworks/internal/bootstrap"
 	"log"
 	"os"
@@ -20,6 +21,7 @@ type AuthServiceConfig = config.Config
 // loadInitialConfig 加载配置并返回配置与文件来源
 func loadInitialConfig() (*AuthServiceConfig, []string, *config.Loader, error) {
 	loader := config.NewLoader(
+		// 指定配置文件名称 configs//auth-service.yaml
 		config.WithService("auth-service"),
 	)
 
@@ -41,6 +43,7 @@ func main() {
 		log.Fatalf("加载配置失败: %v", err)
 	}
 
+	fmt.Println("sources ",sources)
 	logger.Info("配置加载成功", logging.Fields{
 		"environment": cfg.App.Environment,
 		"sources":     sources,

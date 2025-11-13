@@ -3,6 +3,8 @@ package logging
 
 import (
 	"context"
+	"encoding/json"
+	"fmt"
 	"time"
 )
 
@@ -236,7 +238,13 @@ func (l *defaultLogger) logWithContext(ctx context.Context, level Level, msg str
 
 func (e *LogEntry) String() string {
 	// 简化的字符串表示
-	return e.Timestamp.Format(time.RFC3339) + " [" + e.Level.String() + "] " + e.Message
+	fieldsBytes, _ := json.Marshal(e.Fields)
+	return fmt.Sprintf("%s [%s] %s %s %s",
+		e.Timestamp.Format(time.RFC3339),
+		e.Level.String(),
+		e.Message,
+		string(fieldsBytes),
+		e.Error)
 }
 
 // NewBaseLogger creates a new base logger

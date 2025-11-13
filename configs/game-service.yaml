@@ -32,7 +32,7 @@ server:
 database:
   # MongoDB 主数据库
   mongodb:
-    uri: "mongodb://admin:admin123@mongodb:27017"
+    uri: "mongodb://admin:admin123@127.0.0.1:27017"
     database: "mmo_game"
     username: "admin"
     password: "admin123"
@@ -45,7 +45,7 @@ database:
     
   # Redis 缓存
   redis:
-    addr: "redis:6379"
+    addr: "127.0.0.1:6379"
     password: "redis123"
     db: 0
     pool_size: 100

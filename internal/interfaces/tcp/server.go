@@ -141,10 +141,11 @@ func (s *TCPServer) Start() error {
 	// 创建监听器
 	listener, err := net.Listen("tcp", s.config.Addr)
 	if err != nil {
-		s.logger.Error("Failed to create listener", err, logging.Fields{
+		fmt.Println("Failed to create listener2 ", err, " s.config.Addr ", s.config.Addr)
+		s.logger.Error("Failed to create listener2", err, logging.Fields{
 			"address": s.config.Addr,
 		})
-		return fmt.Errorf("failed to create listener: %w", err)
+		return fmt.Errorf("failed to create listener3: %w", err)
 	}
 
 	s.listener = listener

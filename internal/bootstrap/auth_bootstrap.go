@@ -9,6 +9,7 @@ import (
 	"github.com/redis/go-redis/v9"
 	"go.mongodb.org/mongo-driver/mongo"
 
+	"greatestworks/internal/application/handlers"
 	"greatestworks/internal/config"
 	"greatestworks/internal/database"
 	"greatestworks/internal/events"
@@ -16,6 +17,7 @@ import (
 	"greatestworks/internal/infrastructure/messaging"
 	"greatestworks/internal/infrastructure/monitoring"
 	httpiface "greatestworks/internal/interfaces/http"
+	// httpauth "greatestworks/internal/interfaces/http/auth"
 )
 
 // AuthBootstrap wires infrastructure for the auth service
@@ -29,6 +31,10 @@ type AuthBootstrap struct {
 	mongoClient *mongo.Client
 	redisClient *redis.Client
 	eventBus    *events.EventBus
+
+	// buses
+	commandBus *handlers.CommandBus
+	queryBus   *handlers.QueryBus
 
 	ctx    context.Context
 	cancel context.CancelFunc
@@ -169,6 +175,15 @@ func (s *AuthBootstrap) initializeInfrastructure(cfg *config.Config) error {
 	return nil
 }
 
+func (s *AuthBootstrap) initializeApplicationLayer(cfg *config.Config) error {
+	_ = cfg
+	s.logger.Info("初始化应用服务层")
+	s.commandBus = handlers.NewCommandBus()
+	s.queryBus = handlers.NewQueryBus()
+	s.logger.Info("应用服务层初始化完成")
+	return nil
+}
+
 func (s *AuthBootstrap) initializeHTTPServer(cfg *config.Config) error {
 	s.logger.Info("初始化HTTP服务器")
 	httpConfig := &httpiface.ServerConfig{
@@ -176,6 +191,9 @@ func (s *AuthBootstrap) initializeHTTPServer(cfg *config.Config) error {
 		ReadTimeout: cfg.Server.HTTP.ReadTimeout, WriteTimeout: cfg.Server.HTTP.WriteTimeout, IdleTimeout: cfg.Server.HTTP.IdleTimeout,
 	}
 	s.httpServer = httpiface.NewServer(httpConfig, s.logger)
+
+	// loginHandler := httpauth.NewLoginHandler(s.commandBus, s.queryBus, s.logger, cfg.Security.JWT.Secret)
+	// s.httpServer.Handle("POST", "/instances/create", loginHandler.Login)
 	if cfg.Monitoring.Profiling.Enabled && cfg.Monitoring.Profiling.Host == cfg.Server.HTTP.Host && cfg.Monitoring.Profiling.Port == cfg.Server.HTTP.Port {
 		s.httpServer.EnableProfiling()
 	}

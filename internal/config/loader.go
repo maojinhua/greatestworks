@@ -108,6 +108,8 @@ func (l *Loader) Load() (*Config, []string, error) {
 		errs []error
 	)
 
+	fmt.Println("candidates ",candidates)
+	// 遍历路径，将存在的文件内容序列化到 cfg 中，后面的覆盖前面的配置
 	for _, path := range candidates {
 		data, err := os.ReadFile(path)
 		if err != nil {
@@ -126,6 +128,7 @@ func (l *Loader) Load() (*Config, []string, error) {
 		used = append(used, path)
 	}
 
+	fmt.Println("used ",used)
 	if len(used) == 0 {
 		if len(errs) > 0 {
 			return nil, nil, errors.Join(errs...)
@@ -138,7 +141,9 @@ func (l *Loader) Load() (*Config, []string, error) {
 		)
 	}
 
+	// 填充默认配置
 	cfg.ApplyDefaults()
+	// 使用环境变量覆盖配置
 	l.applyEnvOverrides(&cfg)
 
 	if l.service != "" && cfg.Service.Name == "" {
@@ -190,23 +195,28 @@ func (l *Loader) BaseDir() string {
 	return l.baseDir
 }
 
+// 获取配置文件路径
 func (l *Loader) resolveCandidates() []string {
 	if len(l.explicitFiles) > 0 {
 		return normalizePaths(l.explicitFiles)
 	}
 
+	// 默认路径
 	names := []string{
 		"config.base.yaml",
 		"config.yaml",
 	}
 
+	// 如果 env 配置不为空，则添加 config.<env>.yaml 文件路径
 	if l.env != "" {
 		names = append(names, fmt.Sprintf("config.%s.yaml", l.env))
 	}
 
 	if l.service != "" {
+		// 如果 service 配置不为空，则添加 <service>.yaml 文件路径
 		names = append(names, fmt.Sprintf("%s.yaml", l.service))
 		if l.env != "" {
+			// 如果 service 和 env 不为空，则添加 <service>.<env>.yaml 文件路径
 			names = append(names, fmt.Sprintf("%s.%s.yaml", l.service, l.env))
 		}
 	}
@@ -285,6 +295,7 @@ func normalizePaths(paths []string) []string {
 		normalized = append(normalized, cleaned)
 	}
 
+	fmt.Println("normalized ",normalized)
 	sort.Strings(normalized)
 	return normalized
 }

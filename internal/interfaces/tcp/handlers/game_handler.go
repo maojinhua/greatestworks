@@ -42,6 +42,7 @@ func (h *GameHandler) SetCharacterService(cs *appServices.CharacterService) { h.
 
 // HandleMessage 处理消息
 func (h *GameHandler) HandleMessage(session *connection.Session, message *protocol.Message) error {
+	fmt.Println("")
 	h.logger.Info("处理游戏消息", map[string]interface{}{
 		"message_type": message.Header.MessageType,
 		"player_id":    message.Header.PlayerID,
